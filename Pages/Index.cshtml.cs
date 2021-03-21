@@ -19,7 +19,7 @@ namespace WebZipIt.Pages
         {
         }
 
-        public FileStreamResult OnGetDownloadBots()
+        public IActionResult OnGetDownloadBots()
         {
             var botsFolderPath = Path.Combine(hostEnvironment.ContentRootPath, "bots");
             var botFilePaths = Directory.GetFiles(botsFolderPath);

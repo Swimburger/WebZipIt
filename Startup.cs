@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -16,11 +15,9 @@ namespace WebZipIt
 {
     public class Startup
     {
-        private IWebHostEnvironment hostEnvironment;
-        public Startup(IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            this.hostEnvironment = hostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
@@ -75,7 +72,7 @@ namespace WebZipIt
                     context.Response.Headers.Add("Content-Type", "binary/octet-stream")  ;
                     context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"Bots.zip\"");
 
-                    var botsFolderPath = Path.Combine(hostEnvironment.ContentRootPath, "bots");
+                    var botsFolderPath = Path.Combine(env.ContentRootPath, "bots");
                     var botFilePaths = Directory.GetFiles(botsFolderPath);
                     using (var zipFileMemoryStream = new MemoryStream())
                     {
