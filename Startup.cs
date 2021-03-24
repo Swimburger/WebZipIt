@@ -66,31 +66,26 @@ namespace WebZipIt
                 {
                     await context.Response.WriteAsync("Request /download-bots to download a zip file of .NET Bots");
                 });
-                
+
                 endpoints.MapGet("/download-bots", async context =>
                 {
-                    context.Response.Headers.Add("Content-Type", "binary/octet-stream")  ;
+                    context.Response.ContentType = "binary/octet-stream";
                     context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"Bots.zip\"");
 
                     var botsFolderPath = Path.Combine(env.ContentRootPath, "bots");
                     var botFilePaths = Directory.GetFiles(botsFolderPath);
-                    using (var zipFileMemoryStream = new MemoryStream())
+                    using (ZipArchive archive = new ZipArchive(context.Response.BodyWriter.AsStream(), ZipArchiveMode.Create))
                     {
-                        using (ZipArchive archive = new ZipArchive(zipFileMemoryStream, ZipArchiveMode.Update, leaveOpen: true))
+                        foreach (var botFilePath in botFilePaths)
                         {
-                            foreach (var botFilePath in botFilePaths)
+                            var botFileName = Path.GetFileName(botFilePath);
+                            var entry = archive.CreateEntry(botFileName);
+                            using (var entryStream = entry.Open())
+                            using (var fileStream = System.IO.File.OpenRead(botFilePath))
                             {
-                                var botFileName = Path.GetFileName(botFilePath);
-                                var entry = archive.CreateEntry(botFileName);
-                                using (var entryStream = entry.Open())
-                                using (var fileStream = System.IO.File.OpenRead(botFilePath))
-                                {
-                                    fileStream.CopyTo(entryStream);
-                                }
+                                await fileStream.CopyToAsync(entryStream);
                             }
                         }
-                        zipFileMemoryStream.Seek(0, SeekOrigin.Begin);
-                        await zipFileMemoryStream.CopyToAsync(context.Response.Body);
                     }
                 });
 

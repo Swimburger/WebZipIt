@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebZipIt.Pages
@@ -19,12 +19,14 @@ namespace WebZipIt.Pages
         {
         }
 
-        public IActionResult OnGetDownloadBots()
+        public async Task OnGetDownloadBots()
         {
+            Response.ContentType = "binary/octet-stream";
+            Response.Headers.Add("Content-Disposition", "attachment; filename=\"Bots.zip\"");
+
             var botsFolderPath = Path.Combine(hostEnvironment.ContentRootPath, "bots");
             var botFilePaths = Directory.GetFiles(botsFolderPath);
-            var zipFileMemoryStream = new MemoryStream();
-            using (ZipArchive archive = new ZipArchive(zipFileMemoryStream, ZipArchiveMode.Update, leaveOpen: true))
+            using (ZipArchive archive = new ZipArchive(Response.BodyWriter.AsStream(), ZipArchiveMode.Create))
             {
                 foreach (var botFilePath in botFilePaths)
                 {
@@ -33,13 +35,10 @@ namespace WebZipIt.Pages
                     using (var entryStream = entry.Open())
                     using (var fileStream = System.IO.File.OpenRead(botFilePath))
                     {
-                        fileStream.CopyTo(entryStream);
+                        await fileStream.CopyToAsync(entryStream);
                     }
                 }
             }
-
-            zipFileMemoryStream.Seek(0, SeekOrigin.Begin);
-            return File(zipFileMemoryStream, "binary/octet-stream", "Bots.zip");
         }
     }
 }
