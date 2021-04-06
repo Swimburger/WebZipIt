@@ -22,7 +22,7 @@ namespace WebZipIt.Controllers
 
         public async Task DownloadBots()
         {
-            Response.ContentType = "binary/octet-stream";
+            Response.ContentType = "application/octet-stream";
             Response.Headers.Add("Content-Disposition", "attachment; filename=\"Bots.zip\"");
 
             var botsFolderPath = Path.Combine(hostEnvironment.ContentRootPath, "bots");
@@ -62,7 +62,7 @@ namespace WebZipIt.Controllers
             }
 
             zipFileMemoryStream.Seek(0, SeekOrigin.Begin);
-            return File(zipFileMemoryStream, "binary/octet-stream", "Bots.zip");
+            return File(zipFileMemoryStream, "application/octet-stream", "Bots.zip");
         }
     }
 }

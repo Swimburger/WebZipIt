@@ -69,7 +69,7 @@ namespace WebZipIt
 
                 endpoints.MapGet("/download-bots", async context =>
                 {
-                    context.Response.ContentType = "binary/octet-stream";
+                    context.Response.ContentType = "application/octet-stream";
                     context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"Bots.zip\"");
 
                     var botsFolderPath = Path.Combine(env.ContentRootPath, "bots");

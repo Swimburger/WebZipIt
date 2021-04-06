@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebZipIt.Pages
@@ -19,9 +20,9 @@ namespace WebZipIt.Pages
         {
         }
 
-        public async Task OnGetDownloadBots()
+        public async Task<IActionResult> OnGetDownloadBots()
         {
-            Response.ContentType = "binary/octet-stream";
+            Response.ContentType = "application/octet-stream";
             Response.Headers.Add("Content-Disposition", "attachment; filename=\"Bots.zip\"");
 
             var botsFolderPath = Path.Combine(hostEnvironment.ContentRootPath, "bots");
@@ -39,6 +40,8 @@ namespace WebZipIt.Pages
                     }
                 }
             }
+            
+            return new EmptyResult();
         }
     }
 }
